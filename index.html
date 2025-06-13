@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS from CDN for styling -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <title>FETCH API SANDBOX</title>
 </head>
@@ -10,37 +11,49 @@
     <div class="container">
         <h1 class="display-4 mb-4">Fetch API Sandbox</h1>
 
+        <!-- Button container using Bootstrap flexbox -->
         <div class="d-flex">
+            <!-- Button to fetch text from a local file -->
             <button id="getText" class="btn btn-primary me-4">Get Text</button>
+            <!-- Button to fetch JSON data from local file -->
             <button id="getUsers" class="btn btn-warning me-4">Get JSON</button>
+            <!-- Button to fetch data from external API -->
             <button id="getPosts" class="btn btn-success me-4">Get API DATA</button>
         </div>
 
         <hr>
         
-
+        <!-- Container where all fetched data will be displayed -->
         <div id="sampleText"></div>
         
-
+        <!-- Form to add new post via API -->
         <form action="" id="addPost">
             <div class="form-group ">
+                <!-- Input field for post title -->
                 <input type="text" id="title" class="form-control mb-2" placeholder="Title...">
             </div>
             <div class="form-group">
+                <!-- Textarea for post body content -->
                 <textarea id="body" class="form-control mb-2" placeholder="Body..."></textarea>
             </div>
+            <!-- Submit button for the form -->
             <input type="submit" class="btn btn-secondary" value="Submit">
         </form>
     </div>
 
     <script>
+        // Event listeners - attach click/submit handlers to elements
         document.getElementById('getText').addEventListener('click', getText)
         document.getElementById('getUsers').addEventListener('click', getUsers)
         document.getElementById('getPosts').addEventListener('click', getPosts)
         document.getElementById('addPost').addEventListener('submit', addPost)
 
+        // Function to fetch text from a local file
         function getText(){
+            // Fetch API call to get text file content
             fetch(' sample.txt')
+            
+            // Old way of handling promises (commented out)
             // .then(function(res){
             //     return res.text()
             // .then(function(data){
@@ -48,19 +61,28 @@
             // })
             // })
 
-            .then((res) => res.text())
+            // Modern arrow function way to handle response
+            .then((res) => res.text())  // Convert response to text
             .then((data) => {
+                // Display the text content in the sampleText div
                 document.getElementById('sampleText').innerHTML = data 
             })
-            .catch((err) => console.log(error))
+            // Catch any errors that occur during fetch
+            .catch((err) => console.log(error))  // Note: should be 'err' not 'error'
         }
 
+        // Function to fetch JSON data from local file
         function getUsers(){
+            // Fetch users from local JSON file
             fetch('users.json')
-            .then((res) => res.json())
+            .then((res) => res.json())  // Convert response to JSON
             .then((data) => {
+                // Start building HTML output with heading
                 let output = '<h2 class="mb-4">Users</h2>'
+                
+                // Loop through each user in the JSON array
                 data.forEach(function(user){
+                    // Build HTML list for each user using template literals
                      output += `
                         <ul class="list-group mb-3">
                             <li class="list-group-item">ID: ${user.id}</li>    
@@ -69,16 +91,23 @@
                          </ul>
                     `
                 })
+                // Insert the generated HTML into the page
                 document.getElementById('sampleText').innerHTML = output
             })
         }
 
+        // Function to fetch posts from external API
         function getPosts(){
+            // Fetch from JSONPlaceholder - a fake REST API for testing
             fetch('https://jsonplaceholder.typicode.com/posts')
-            .then((res) => res.json())
+            .then((res) => res.json())  // Convert response to JSON
             .then((data) => {
+                // Start building HTML output with heading
                 let output = '<h2 class="mb-4">Posts</h2>'
+                
+                // Loop through each post from the API
                 data.forEach(function(post){
+                    // Build Bootstrap card for each post
                      output += `
                         <div class="card card-body mb-3">
                             <h3>TITLE: ${post.title}</h3>    
@@ -86,25 +115,35 @@
                          </div>
                     `
                 })
+                // Display all posts in the sampleText div
                 document.getElementById('sampleText').innerHTML = output
             })
         }
 
+        // Function to add new post via API
         function addPost(e){
+            // Prevent default form submission behavior
             e.preventDefault()
+            
+            // Get values from form inputs
             let title = document.getElementById('title').value
             let body = document.getElementById('body').value
 
+            // POST request to add new post
             fetch('https://jsonplaceholder.typicode.com/posts', {
-                method: 'POST',
+                method: 'POST',  // HTTP method for creating new resource
                 headers: {
+                    // Tell server what content types we accept
                     'Accept': 'application/json, text/plain, */*',
+                    // Tell server we're sending JSON data
                     'Content-type': 'application/json'
                 },
+                // Convert JavaScript object to JSON string for sending
                 body: JSON.stringify({title:title, body:body})
             })
-            .then((res) => res.json())
-            .then((data) => console.log(data))
+            .then((res) => res.json())  // Convert response to JSON
+            .then((data) => console.log(data))  // Log the response (includes new post with ID)
+            // Note: This is a fake API so post won't actually be saved
         }
     </script>
 </body>
